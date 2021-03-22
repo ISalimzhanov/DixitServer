@@ -8,9 +8,4 @@ import org.springframework.data.mongodb.core.MongoClientFactoryBean
 @Configuration
 @EnableMongoRepositories
 class MongoConfig {
-    @Bean
-    fun mongoTemplate(): MongoClientFactoryBean {
-        val mongo: MongoClientFactoryBean = MongoClientFactoryBean()
-        return mongo
-    }
 }

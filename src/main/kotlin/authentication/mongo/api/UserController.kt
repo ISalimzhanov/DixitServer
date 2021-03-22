@@ -6,23 +6,21 @@ import authentication.mongo.api.jsonrpc.JsonRpcResponse
 import authentication.mongo.users.User
 import authentication.mongo.users.UserRepository
 import authentication.mongo.users.exceptions.IncorrectPasswordException
-import authentication.mongo.users.exceptions.UserNotExistsException
+import authentication.mongo.users.exceptions.UserDoesntExistException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import java.lang.Exception
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
-@RequestMapping("/API/users")
+@CrossOrigin(origins = ["*"])
 class UserController(
     @Autowired private val userRepository: UserRepository,
 ) {
     fun login(alias: String, password: String): User {
         val user: User = userRepository.findByAlias(alias)
-            ?: throw UserNotExistsException()
+            ?: throw UserDoesntExistException()
         if (user.password != password)
             throw IncorrectPasswordException()
         return user
@@ -34,8 +32,8 @@ class UserController(
         return user
     }
 
-    @PostMapping
-    fun handleRequest(request: JsonRpcRequest): ResponseEntity<JsonRpcResponse> {
+    @RequestMapping("/api/users", method = [RequestMethod.OPTIONS, RequestMethod.POST])
+    fun handleRequest(@RequestBody request: JsonRpcRequest): ResponseEntity<JsonRpcResponse> {
         var result: Any? = null
         var error: JsonRpcError? = null
         when (request.method) {
@@ -51,7 +49,7 @@ class UserController(
                             request.params["alias"]!! as String,
                             request.params["password"]!! as String,
                         )
-                    } catch (e: UserNotExistsException) {
+                    } catch (e: UserDoesntExistException) {
                         error = JsonRpcError(
                             code = -11,
                             message = e.message!!
@@ -77,8 +75,11 @@ class UserController(
                             request.params["alias"]!! as String,
                             request.params["password"]!! as String,
                         )
-                    } catch (e: Exception) {
-                        //toDo
+                    } catch (e: DuplicateKeyException) {
+                        error = JsonRpcError(
+                            code = -21,
+                            message = e.message!!
+                        )
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.demo
+package authentication.mongo
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
