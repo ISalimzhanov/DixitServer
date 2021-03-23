@@ -1,4 +1,4 @@
-package authentication.mongo.users
+package server.authentication.mongo.users
 
 import org.springframework.data.mongodb.repository.MongoRepository
 

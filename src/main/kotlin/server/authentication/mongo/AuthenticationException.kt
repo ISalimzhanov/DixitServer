@@ -1,4 +1,4 @@
-package authentication.mongo
+package server.authentication.mongo
 
 open class AuthenticationException : Exception {
     constructor() : super()

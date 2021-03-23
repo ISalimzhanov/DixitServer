@@ -1,6 +1,6 @@
-package authentication.mongo.users.exceptions
+package server.authentication.mongo.users.exceptions
 
-import authentication.mongo.AuthenticationException
+import server.authentication.mongo.AuthenticationException
 
 open class UserException : AuthenticationException {
     constructor() : super()

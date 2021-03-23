@@ -1,12 +1,12 @@
-package authentication.mongo.api
+package server.authentication.mongo
 
-import authentication.mongo.api.jsonrpc.JsonRpcError
-import authentication.mongo.api.jsonrpc.JsonRpcRequest
-import authentication.mongo.api.jsonrpc.JsonRpcResponse
-import authentication.mongo.users.User
-import authentication.mongo.users.UserRepository
-import authentication.mongo.users.exceptions.IncorrectPasswordException
-import authentication.mongo.users.exceptions.UserDoesntExistException
+import server.api.jsonrpc.JsonRpcError
+import server.api.jsonrpc.JsonRpcRequest
+import server.api.jsonrpc.JsonRpcResponse
+import server.authentication.mongo.users.User
+import server.authentication.mongo.users.UserRepository
+import server.authentication.mongo.users.exceptions.IncorrectPasswordException
+import server.authentication.mongo.users.exceptions.UserDoesntExistException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.ResponseEntity
@@ -48,7 +48,7 @@ class UserController(
                         result = login(
                             request.params["alias"]!! as String,
                             request.params["password"]!! as String,
-                        )
+                        ).id
                     } catch (e: UserDoesntExistException) {
                         error = JsonRpcError(
                             code = -11,
@@ -64,7 +64,6 @@ class UserController(
             }
             "register" -> {
                 if (request.params["alias"] == null || request.params["password"] == null) {
-                    result = null
                     error = JsonRpcError(
                         code = -20,
                         message = "Alias, password or both are not defined"
@@ -74,7 +73,7 @@ class UserController(
                         result = register(
                             request.params["alias"]!! as String,
                             request.params["password"]!! as String,
-                        )
+                        ).id
                     } catch (e: DuplicateKeyException) {
                         error = JsonRpcError(
                             code = -21,

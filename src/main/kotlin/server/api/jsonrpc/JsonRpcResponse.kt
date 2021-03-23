@@ -1,4 +1,4 @@
-package authentication.mongo.api.jsonrpc
+package server.api.jsonrpc
 
 data class JsonRpcResponse(
     val result: Any?,
