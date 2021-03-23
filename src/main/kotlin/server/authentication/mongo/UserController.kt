@@ -3,10 +3,10 @@ package server.authentication.mongo
 import server.api.jsonrpc.JsonRpcError
 import server.api.jsonrpc.JsonRpcRequest
 import server.api.jsonrpc.JsonRpcResponse
-import server.authentication.mongo.users.User
-import server.authentication.mongo.users.UserRepository
-import server.authentication.mongo.users.exceptions.IncorrectPasswordException
-import server.authentication.mongo.users.exceptions.UserDoesntExistException
+import server.authentication.mongo.documents.users.User
+import server.authentication.mongo.repositories.UserRepository
+import server.authentication.mongo.exceptions.users.IncorrectPasswordException
+import server.authentication.mongo.exceptions.users.UserDoesntExistException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.ResponseEntity

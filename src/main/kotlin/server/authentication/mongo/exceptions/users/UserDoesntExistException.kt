@@ -1,4 +1,4 @@
-package server.authentication.mongo.users.exceptions
+package server.authentication.mongo.exceptions.users
 
 class UserDoesntExistException: UserException("User doesn't exist") {
 }

@@ -1,4 +1,4 @@
-package server.lobby.mongo.player
+package server.lobby.mongo.documents.players
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

@@ -1,14 +1,18 @@
-package server.lobby.mongo.lobbies
+package server.lobby_service.mongo.documents.lobbies
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
-import server.lobby.mongo.player.Player
+import server.lobby.mongo.documents.players.Player
+import server.lobby_service.mongo.exceptions.player.AlreadyInLobbyException
+import server.lobby_service.mongo.exceptions.player.NotInLobbyException
 
 @Document
 data class Lobby(
+    @Indexed(unique = true)
     val name: String,
-    val passwordKey: String?,
+    val password: String?,
     val region: LobbyRegion,
     var state: LobbyState,
     val seed: Int,
@@ -18,9 +22,9 @@ data class Lobby(
     lateinit var id: String
     fun addPlayer(player: Player): Lobby {
         if (players.contains(player))
-            throw Exception() //toDo
+            throw AlreadyInLobbyException()
         val lobby = Lobby(
-            name, passwordKey, region, state, seed,
+            name, password, region, state, seed,
             players = (players + listOf(player))
         )
         lobby.id = id
@@ -29,9 +33,9 @@ data class Lobby(
 
     fun removePlayer(player: Player): Lobby {
         if (!players.contains(player))
-            throw Exception() //toDo
+            throw NotInLobbyException()
         val lobby = Lobby(
-            name, passwordKey, region, state, seed,
+            name, password, region, state, seed,
             players = (players - listOf(player))
         )
         lobby.id = id
@@ -40,7 +44,7 @@ data class Lobby(
 
     fun setState(state: LobbyState): Lobby {
         val lobby = Lobby(
-            name, passwordKey, region, state, seed,
+            name, password, region, state, seed,
             players
         )
         lobby.id = id

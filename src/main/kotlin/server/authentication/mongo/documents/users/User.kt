@@ -1,4 +1,4 @@
-package server.authentication.mongo.users
+package server.authentication.mongo.documents.users
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
