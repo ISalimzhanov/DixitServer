@@ -4,6 +4,7 @@ import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
 import server.api.jsonrpc.JsonRpcError
 import server.authentication.exceptions.user.UserDoesntExistException
+import server.authentication.exceptions.user.UserException
 import server.lobby_service.exceptions.lobby.LobbyException
 import server.lobby_service.exceptions.player.PlayerException
 import server.lobby_service.jsonrpc.messages.requests.*
@@ -26,13 +27,24 @@ class LobbyHandler(
                 JsonRpcError(code = -20, message = e.message!!),
                 request.id
             )
+        } catch (e: LobbyException) {
+            CreateLobbyResponse(
+                null,
+                JsonRpcError(code = -20, message = e.message!!),
+                request.id
+            )
         }
     }
 
     fun join(request: JoinLobbyRequest): JoinLobbyResponse {
         return try {
             JoinLobbyResponse(
-                lobbyService.joinLobby(request.params.userId, request.params.connector, request.params.lobbyId, request.params.password),
+                lobbyService.joinLobby(
+                    request.params.userId,
+                    request.params.connector,
+                    request.params.lobbyId,
+                    request.params.password
+                ),
                 null,
                 request.id
             )
@@ -42,7 +54,13 @@ class LobbyHandler(
                 JsonRpcError(code = -21, message = e.message!!),
                 request.id
             )
-        } catch (e: UserDoesntExistException) {
+        } catch (e: PlayerException) {
+            JoinLobbyResponse(
+                null,
+                JsonRpcError(code = -21, message = e.message!!),
+                request.id
+            )
+        } catch (e: UserException) {
             JoinLobbyResponse(
                 null,
                 JsonRpcError(code = -22, message = e.message!!),
@@ -70,7 +88,7 @@ class LobbyHandler(
                 JsonRpcError(code = -22, message = e.message!!),
                 request.id
             )
-        } catch (e: UserDoesntExistException) {
+        } catch (e: UserException) {
             LeaveLobbyResponse(
                 null,
                 JsonRpcError(code = -22, message = e.message!!),
@@ -82,7 +100,12 @@ class LobbyHandler(
     fun find(request: FindLobbyRequest): FindLobbyResponse {
         return try {
             FindLobbyResponse(
-                lobbyService.findLobby(request.params.region, request.params.searchQuery, request.params.page, request.params.pageSize),
+                lobbyService.findLobby(
+                    request.params.region,
+                    request.params.searchQuery,
+                    request.params.page,
+                    request.params.pageSize
+                ),
                 null,
                 request.id
             )

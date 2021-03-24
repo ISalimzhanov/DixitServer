@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository
 import server.lobby_service.mongo.documents.lobbies.Lobby
 import server.lobby_service.mongo.documents.lobbies.LobbyRegion
 import server.lobby.mongo.documents.players.Player
+import server.lobby_service.mongo.documents.lobbies.LobbyState
 
 @Suppress("SpringDataRepositoryMethodParametersInspection")
 @Repository
@@ -23,6 +24,8 @@ interface LobbyRepository
     fun findAllByRegionAndNameContains(region: LobbyRegion, name: String): List<Lobby>
 
     fun findAllByRegionAndNameContains(region: LobbyRegion, name: String, pageable: Pageable): List<Lobby>
+
+    fun findAllByCreatedAtBeforeAndState(time: Long?, state: LobbyState): List<Lobby>
 
     fun findAllByRegion(region: LobbyRegion): List<Lobby>
 

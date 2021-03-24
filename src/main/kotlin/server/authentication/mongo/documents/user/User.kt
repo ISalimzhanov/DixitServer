@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "user")
 data class User(
-    @Indexed(unique = true)
+    @Indexed(name = "alias", unique = true)
     var alias: String,
     var password: String,
 ) {

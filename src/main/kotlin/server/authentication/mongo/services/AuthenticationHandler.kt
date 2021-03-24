@@ -3,8 +3,7 @@ package server.authentication.mongo.services
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
 import server.api.jsonrpc.JsonRpcError
-import server.authentication.exceptions.user.IncorrectPasswordException
-import server.authentication.exceptions.user.UserDoesntExistException
+import server.authentication.exceptions.user.UserException
 import server.authentication.messages.requests.LoginPlayerRequest
 import server.authentication.messages.requests.RegisterPlayerRequest
 import server.authentication.messages.responses.LoginPlayerResponse
@@ -22,10 +21,8 @@ class AuthenticationHandler(
                     request.params.password,
                 ), null, request.id
             )
-        } catch (e: UserDoesntExistException) {
+        } catch (e: UserException) {
             LoginPlayerResponse(null, JsonRpcError(-10, e.message!!), request.id)
-        } catch (e: IncorrectPasswordException) {
-            LoginPlayerResponse(null, JsonRpcError(-11, e.message!!), request.id)
         }
     }
 
@@ -38,6 +35,8 @@ class AuthenticationHandler(
                 ), null, request.id
             )
         } catch (e: DuplicateKeyException) {
+            RegisterPlayerResponse(null, JsonRpcError(-12, e.message!!), request.id)
+        } catch (e: UserException) {
             RegisterPlayerResponse(null, JsonRpcError(-12, e.message!!), request.id)
         }
     }

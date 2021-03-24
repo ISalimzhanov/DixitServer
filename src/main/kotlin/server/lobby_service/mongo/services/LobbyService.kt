@@ -7,6 +7,7 @@ import server.authentication.exceptions.user.UserDoesntExistException
 import server.authentication.mongo.documents.user.User
 import server.authentication.mongo.repositories.UserRepository
 import server.lobby.mongo.documents.players.Player
+import server.lobby_service.exceptions.LobbyExistsException
 import server.lobby_service.exceptions.lobby.LobbyList
 import server.lobby_service.mongo.documents.lobbies.Lobby
 import server.lobby_service.mongo.documents.lobbies.LobbyRegion
@@ -14,7 +15,7 @@ import server.lobby_service.mongo.documents.lobbies.LobbySearchResult
 import server.lobby_service.mongo.documents.lobbies.LobbyState
 import server.lobby_service.exceptions.lobby.LobbyDoesntExistException
 import server.lobby_service.exceptions.player.PlayerDoesntExistException
-import server.lobby_service.exceptions.player.PlayerException
+import server.lobby_service.mongo.documents.players.PlayerInfo
 import server.lobby_service.mongo.repositories.LobbyRepository
 import server.lobby_service.mongo.repositories.PlayerRepository
 import java.util.*
@@ -26,14 +27,14 @@ class LobbyService(
     private val userRepository: UserRepository,
 ) {
     private fun createOrModifyPlayer(userId: String, connector: String): Player {
-        var player: Player? = playerRepository.findByUserId(userId)
+        val user: User = userRepository.findUserById(userId) ?: throw UserDoesntExistException()
+        var player: Player? = playerRepository.findByUser(user)
         if (player == null) {
-            player = Player(userId, connector)
+            player = Player(user, connector)
             playerRepository.save(player)
         } else {
-            player.setConnector(connector)
+            playerRepository.save(player.setConnector(connector))
         }
-        val user: User = userRepository.findUserById(userId) ?: throw UserDoesntExistException()
         return player
     }
 
@@ -42,13 +43,16 @@ class LobbyService(
         password: String?,
         region: LobbyRegion,
     ): String {
+        if (lobbyRepository.existsByName(name))
+            throw LobbyExistsException()
         val lobby = Lobby(
             name = name,
             password = password,
             region = region,
             state = LobbyState.CREATED,
             seed = Random().nextInt(),
-            players = listOf()
+            players = listOf(),
+            createdAt = System.currentTimeMillis(),
         )
         lobbyRepository.save(lobby)
         return lobby.id
@@ -59,20 +63,27 @@ class LobbyService(
         connector: String,
         lobbyId: String,
         password: String?
-    ): List<Player> {
+    ): List<PlayerInfo> {
         val player = createOrModifyPlayer(userId, connector)
         val lobby = lobbyRepository.findLobbyById(lobbyId) ?: throw LobbyDoesntExistException()
         if (lobby.password != password)
             throw IncorrectPasswordException()
         lobbyRepository.save(lobby.addPlayer(player))
-        return lobby.players
+        return lobby.players.map {
+            PlayerInfo(
+                userId = it.user.id,
+                connector = it.connector,
+                alias = it.user.alias,
+            )
+        }
     }
 
     fun leaveLobby(
         userId: String,
         lobbyId: String,
     ): Unit {
-        val player = playerRepository.findByUserId(userId) ?: throw PlayerDoesntExistException()
+        val user: User = userRepository.findUserById(userId) ?: throw UserDoesntExistException()
+        val player = playerRepository.findByUser(user) ?: throw PlayerDoesntExistException()
         var lobby = lobbyRepository.findLobbyById(lobbyId) ?: throw LobbyDoesntExistException()
         lobby = lobbyRepository.save(lobby.removePlayer(player))
         if (lobby.players.isEmpty()) {

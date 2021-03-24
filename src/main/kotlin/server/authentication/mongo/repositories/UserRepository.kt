@@ -6,4 +6,5 @@ import server.authentication.mongo.documents.user.User
 interface UserRepository : MongoRepository<User, String> {
     fun findByAlias(alias: String): User?
     fun findUserById(id: String): User?
+    fun existsByAlias(alias: String): Boolean
 }

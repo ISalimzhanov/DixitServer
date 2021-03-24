@@ -1,14 +1,20 @@
 package server.lobby.mongo.documents.players
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
+import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
+import server.authentication.mongo.documents.user.User
 
-@Document(collection = "lobby")
+@Document(collection = "player")
 data class Player(
-    @Id val userId: String,
+    @Indexed(unique = true)
+    @DBRef val user: User,
     val connector: String,
 ) {
+    @Id
+    lateinit var id: String
     fun setConnector(connector: String): Player {
-        return Player(userId, connector)
+        return Player(user, connector)
     }
 }

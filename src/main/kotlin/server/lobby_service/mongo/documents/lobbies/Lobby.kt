@@ -16,6 +16,7 @@ data class Lobby(
     val region: LobbyRegion,
     var state: LobbyState,
     val seed: Int,
+    val createdAt: Long,
     @DBRef var players: List<Player>
 ) {
     @Id
@@ -25,7 +26,8 @@ data class Lobby(
             throw AlreadyInLobbyException()
         val lobby = Lobby(
             name, password, region, state, seed,
-            players = (players + listOf(player))
+            players = (players + listOf(player)),
+            createdAt = createdAt,
         )
         lobby.id = id
         return lobby
@@ -36,7 +38,8 @@ data class Lobby(
             throw NotInLobbyException()
         val lobby = Lobby(
             name, password, region, state, seed,
-            players = (players - listOf(player))
+            players = (players - listOf(player)),
+            createdAt = createdAt,
         )
         lobby.id = id
         return lobby
@@ -45,7 +48,7 @@ data class Lobby(
     fun setState(state: LobbyState): Lobby {
         val lobby = Lobby(
             name, password, region, state, seed,
-            players
+            createdAt, players,
         )
         lobby.id = id
         return lobby
