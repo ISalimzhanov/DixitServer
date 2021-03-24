@@ -5,10 +5,10 @@ import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
 import server.lobby.mongo.documents.players.Player
-import server.lobby_service.mongo.exceptions.player.AlreadyInLobbyException
-import server.lobby_service.mongo.exceptions.player.NotInLobbyException
+import server.lobby_service.exceptions.player.AlreadyInLobbyException
+import server.lobby_service.exceptions.player.NotInLobbyException
 
-@Document
+@Document(collection = "lobby")
 data class Lobby(
     @Indexed(unique = true)
     val name: String,
