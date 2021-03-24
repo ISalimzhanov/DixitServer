@@ -97,6 +97,34 @@ class LobbyHandler(
         }
     }
 
+    fun start(request: StartGameRequest): StartGameResponse {
+        return try {
+            StartGameResponse(
+                lobbyService.startLobby(request.params.lobbyId),
+                null,
+                request.id
+            )
+        } catch (e: LobbyException) {
+            StartGameResponse(
+                null,
+                JsonRpcError(code = -22, message = e.message!!),
+                request.id
+            )
+        } catch (e: PlayerException) {
+            StartGameResponse(
+                null,
+                JsonRpcError(code = -22, message = e.message!!),
+                request.id
+            )
+        } catch (e: UserException) {
+            StartGameResponse(
+                null,
+                JsonRpcError(code = -22, message = e.message!!),
+                request.id
+            )
+        }
+    }
+
     fun find(request: FindLobbyRequest): FindLobbyResponse {
         return try {
             FindLobbyResponse(

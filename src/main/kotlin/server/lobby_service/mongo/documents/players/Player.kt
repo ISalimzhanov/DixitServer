@@ -8,13 +8,12 @@ import server.authentication.mongo.documents.user.User
 
 @Document(collection = "player")
 data class Player(
-    @Indexed(unique = true)
     @DBRef val user: User,
-    val connector: String,
+    var connector: String,
 ) {
     @Id
     lateinit var id: String
     fun setConnector(connector: String): Player {
-        return Player(user, connector)
+        return this.also { it.connector = connector }
     }
 }

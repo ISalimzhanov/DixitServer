@@ -1,6 +1,7 @@
 package server.lobby_service.mongo.services
 
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import server.authentication.exceptions.user.IncorrectPasswordException
 import server.authentication.exceptions.user.UserDoesntExistException
@@ -27,15 +28,14 @@ class LobbyService(
     private val userRepository: UserRepository,
 ) {
     private fun createOrModifyPlayer(userId: String, connector: String): Player {
-        val user: User = userRepository.findUserById(userId) ?: throw UserDoesntExistException()
+        val user: User = userRepository.findByIdOrNull(userId) ?: throw UserDoesntExistException()
         var player: Player? = playerRepository.findByUser(user)
         if (player == null) {
             player = Player(user, connector)
-            playerRepository.save(player)
+            return playerRepository.save(player)
         } else {
-            playerRepository.save(player.setConnector(connector))
+            return playerRepository.save(player.setConnector(connector))
         }
-        return player
     }
 
     fun createLobby(
@@ -82,7 +82,7 @@ class LobbyService(
         userId: String,
         lobbyId: String,
     ): Unit {
-        val user: User = userRepository.findUserById(userId) ?: throw UserDoesntExistException()
+        val user: User = userRepository.findByIdOrNull(userId) ?: throw UserDoesntExistException()
         val player = playerRepository.findByUser(user) ?: throw PlayerDoesntExistException()
         var lobby = lobbyRepository.findLobbyById(lobbyId) ?: throw LobbyDoesntExistException()
         lobby = lobbyRepository.save(lobby.removePlayer(player))
@@ -90,6 +90,14 @@ class LobbyService(
             lobbyRepository.deleteLobbyById(lobbyId)
         }
         playerRepository.deleteByUserId(userId)
+    }
+
+    fun startLobby(
+        lobbyId: String,
+    ): Int {
+        var lobby = lobbyRepository.findLobbyById(lobbyId) ?: throw LobbyDoesntExistException()
+        lobby = lobbyRepository.save(lobby.setState(LobbyState.PLAYING))
+        return lobby.seed
     }
 
     fun findLobby(

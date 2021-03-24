@@ -15,5 +15,6 @@ import server.lobby_service.jsonrpc.messages.requests.*
     JsonSubTypes.Type(ValidatePasswordRequest::class),
     JsonSubTypes.Type(RegisterPlayerRequest::class),
     JsonSubTypes.Type(LoginPlayerRequest::class),
+    JsonSubTypes.Type(StartGameRequest::class),
 )
 annotation class RequestTypes

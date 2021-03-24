@@ -34,6 +34,9 @@ class LobbyController(
             is ValidatePasswordRequest -> {
                 handler.validatePassword(request)
             }
+            is StartGameRequest -> {
+                handler.start(request)
+            }
             else -> {
                 InvalidMethodResponse(request.id)
             }
