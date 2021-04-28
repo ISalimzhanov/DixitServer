@@ -1,4 +1,4 @@
-package server.authentication.mongo
+package server.authentication
 
 import server.api.jsonrpc.JsonRpcRequest
 import server.api.jsonrpc.JsonRpcResponse

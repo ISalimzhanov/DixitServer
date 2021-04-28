@@ -1,4 +1,4 @@
-package server.lobby_service.mongo
+package server.lobby_service
 
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
